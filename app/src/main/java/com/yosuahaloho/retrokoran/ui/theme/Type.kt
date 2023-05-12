@@ -13,6 +13,10 @@ val DMSans = FontFamily(
     Font(R.font.dmsansregular)
 )
 
+val DMSerif = FontFamily(
+    Font(R.font.dmserifregular)
+)
+
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = DMSans,
