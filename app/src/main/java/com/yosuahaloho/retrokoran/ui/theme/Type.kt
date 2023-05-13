@@ -20,6 +20,7 @@ val DMSerif = FontFamily(
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = DMSans,
+        color = textColor,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,

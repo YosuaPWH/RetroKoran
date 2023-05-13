@@ -1,5 +1,6 @@
 package com.yosuahaloho.retrokoran.ui.theme
 
+import android.R
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -27,7 +28,9 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40,
     background = backgroundPage,
+    onBackground = Color.Black,
     surface = backgroundPage,
+    onSurface = textColor
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

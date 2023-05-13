@@ -1,56 +1,69 @@
 package com.yosuahaloho.retrokoran.ui.page.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.PlatformTextStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yosuahaloho.retrokoran.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.yosuahaloho.retrokoran.domain.model.Article
 import com.yosuahaloho.retrokoran.domain.model.NewsItemModel
+import com.yosuahaloho.retrokoran.domain.model.Source
 import com.yosuahaloho.retrokoran.ui.component.CategoryChipLayout
 import com.yosuahaloho.retrokoran.ui.component.NewsItem
-import com.yosuahaloho.retrokoran.ui.navigation.ChipsItem
 import com.yosuahaloho.retrokoran.ui.theme.DMSerif
 import com.yosuahaloho.retrokoran.ui.theme.RetroKoranTheme
+import com.yosuahaloho.retrokoran.util.UiState
+import kotlinx.coroutines.flow.collect
 
 /**
  * Created by Yosua on 11/05/2023
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let { 
+        when (it) {
+            is UiState.Loading -> {
+                viewModel.getHeadlineNews("us")
+            }
+            is UiState.Success -> {
+                HomeContent(headlineNews = it.data)
+            }
+            is UiState.Error -> {
+                Log.d("HAHAHAHErrro", it.errorMessage)
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeContent(
+    headlineNews: List<Article>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -84,14 +97,15 @@ fun HomeScreen(
             )
         }
         CategoryChipLayout()
-        NewsItem(
-            newsItem = NewsItemModel(
-                id = 1,
-                title = "Plesiran Kota Batavia",
-                publisher = "SoeratKabar Lama",
-                date = "Senin 15 Juli 1932"
-            )
-        )
+        LazyColumn {
+            items(headlineNews, key = { it.title }) { article ->
+                NewsItem(
+                    article = article
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+
     }
 }
 
@@ -100,6 +114,19 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     RetroKoranTheme {
-        HomeScreen()
+        HomeContent(
+            headlineNews = listOf(
+                Article(
+                    source = Source("google-news", "Google News"),
+                    author = "detikSport",
+                    title = "Lalu Zohri Batal Tampil di Nomor Final Lari 100 Meter SEA Games 2023 - detikSport",
+                    description = null,
+                    url = null,
+                    urlToImage = null,
+                    content = null,
+                    publishedAt = "2023-05-12T08:17:50Z"
+                )
+            )
+        )
     }
 }

@@ -14,3 +14,4 @@ val backgroundNews = Color(0xFFE8DDD5)
 val backgroundPage = Color(0xFFDCD0C7)
 
 val selectedBarColor = Color(0xFFB5A387)
+val textColor = Color(0xFF20262E)
