@@ -1,39 +1,132 @@
 package com.yosuahaloho.retrokoran.data.repository
 
+import android.util.Log
+import com.yosuahaloho.retrokoran.data.local.db.BookmarkNewsDatabase
 import com.yosuahaloho.retrokoran.data.remote.ApiService
 import com.yosuahaloho.retrokoran.domain.model.Article
 import com.yosuahaloho.retrokoran.domain.repository.NewsRepository
 import com.yosuahaloho.retrokoran.util.Result
+import com.yosuahaloho.retrokoran.util.parseDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
 
 /**
  * Created by Yosua on 13/05/2023
  */
-class NewsRepositoryImpl(private val apiService: ApiService) : NewsRepository {
+class NewsRepositoryImpl(private val apiService: ApiService, private val db: BookmarkNewsDatabase) :
+    NewsRepository {
 
-    override suspend fun getHeadlineNews(country: String): Flow<Result<List<Article>>> = flow {
+    override suspend fun getContent(link: String): String = withContext(Dispatchers.IO) {
+        val doc = Jsoup.connect(link).get()
+        val detail = doc.getElementsByClass("article-body__content")
+        val paragraph = detail.select("p")
+        val detailText = StringBuilder()
+
+        for (p in paragraph) {
+            detailText.append(p.text()).append("\n").append("\n")
+        }
+
+        return@withContext detailText.toString()
+    }
+
+    override suspend fun getHeadlineNews(
+        country: String,
+        pageSize: Int
+    ): Flow<Result<List<Article>>> = flow {
         try {
-            apiService.getHeadlineNews(country).let { response ->
+            apiService.getHeadlineNews(country, pageSize).let { response ->
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        val data = body.articles.map { article ->
-                            val titleSplit = article.title.split("-")
-                            val newTitle = titleSplit.first().trim()
-                            article.copy(title = newTitle)
+                        val data = body.articles.distinctBy {
+                            it.title
+                        }.map {
+                            val convertedDate = parseDate(
+                                it.publishedAt,
+                                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                "MMM dd yyyy HH:mm 'GMT'Z"
+                            )
+                            it.copy(publishedAt = convertedDate)
                         }
-                        val nonNullContent = data.filter { it.content != null }
-                        emit(Result.Success(nonNullContent))
+                        emit(Result.Success(data))
                     } else {
-                        emit(Result.Failure("Response body is null"))
+                        emit(Result.Failure("NewsRepo-getHeadlineNews: Response body is null"))
                     }
                 } else {
-                    emit(Result.Failure("Response error: ${response.errorBody()}"))
+                    emit(Result.Failure("NewsRepo-getHeadlineNews: Response error: ${response.errorBody()}"))
                 }
             }
         } catch (e: Exception) {
-            emit(Result.Failure(e.message.toString()))
+            emit(Result.Failure("NewsRepo-getHeadlineNews-Excep: ${e.message}"))
+        }
+    }
+
+    override suspend fun addToBookmarkedNews(news: Article) {
+        try {
+            db.bookmarkNewsDao().insert(news)
+        } catch (e: Exception) {
+            Log.e("Repo-AddToBookmarkedNews", e.message.toString())
+        }
+    }
+
+    override suspend fun removeFromBookmarkedNews(news: Article) {
+        try {
+            db.bookmarkNewsDao().delete(news)
+        } catch (e: Exception) {
+            Log.e("Repo-RemoveFromBookmarkedNews", e.message.toString())
+        }
+    }
+
+    override suspend fun isBookmarkedNews(title: String): Boolean {
+        return try {
+            db.bookmarkNewsDao().isBookmarked(title)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun getBookmarkedNews(): Flow<Result<List<Article>>> = flow {
+        try {
+            val data = db.bookmarkNewsDao().getAllBookmarkedNews()
+            emit(Result.Success(data))
+        } catch (e: Exception) {
+            emit(Result.Failure("GetBookmarkedNews ${e.message}"))
+        }
+    }
+
+    override suspend fun searchNews(
+        sources: String,
+        pageSize: Int,
+        query: String
+    ): Flow<Result<List<Article>>> = flow {
+        try {
+            apiService.searchNews(sources, pageSize, query).let { response ->
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        val data = body.articles.distinctBy {
+                            it.title
+                        }.map {
+                            val convertedDate = parseDate(
+                                it.publishedAt,
+                                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                "MMM dd yyyy HH:mm 'GMT'Z"
+                            )
+                            it.copy(publishedAt = convertedDate)
+                        }
+                        emit(Result.Success(data))
+                    } else {
+                        emit(Result.Failure("NewsRepo-searchNews: Response body is null"))
+                    }
+                } else {
+                    emit(Result.Failure("NewsRepo-searchNews: Response error: ${response.errorBody()}"))
+                }
+            }
+        } catch (e: Exception) {
+            emit(Result.Failure("NewsRepo-searchNews-Excep: ${e.message}"))
         }
     }
 }

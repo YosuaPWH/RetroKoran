@@ -10,8 +10,6 @@ import com.yosuahaloho.retrokoran.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,13 +26,24 @@ class HomeViewModel @Inject constructor(
 
     val uiState: StateFlow<UiState<List<Article>>> get() = _uiState
 
-    fun getHeadlineNews(country: String) {
+    private val _searchResult: MutableStateFlow<UiState<List<Article>>> = MutableStateFlow(UiState.Loading)
+
+    val searchResult: StateFlow<UiState<List<Article>>> get() = _searchResult
+
+    var blockLoading = false
+    init {
+        getHeadlineNews()
+    }
+
+    private fun getHeadlineNews(sources: String = "nbc-news", pageSize: Int = 30) {
+        _uiState.value = UiState.Loading
         viewModelScope.launch {
-            newsRepo.getHeadlineNews(country).collect { result ->
+            newsRepo.getHeadlineNews(sources, pageSize).collect { result ->
                 when (result) {
                     is Result.Success -> {
                         _uiState.value = UiState.Success(result.value)
                     }
+
                     is Result.Failure -> {
                         _uiState.value = UiState.Error(result.message)
                     }
@@ -43,4 +52,23 @@ class HomeViewModel @Inject constructor(
 
         }
     }
+
+    fun searchNews(sources: String = "nbc-news", pageSize: Int = 30, query: String) {
+        blockLoading = true
+        _searchResult.value = UiState.Loading
+        viewModelScope.launch {
+            newsRepo.searchNews(sources, pageSize, query).collect { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _searchResult.value = UiState.Success(result.value)
+                    }
+
+                    is Result.Failure -> {
+                        _searchResult.value = UiState.Error(result.message)
+                    }
+                }
+            }
+        }
+    }
+
 }

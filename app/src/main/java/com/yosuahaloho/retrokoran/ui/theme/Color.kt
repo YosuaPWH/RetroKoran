@@ -15,3 +15,7 @@ val backgroundPage = Color(0xFFDCD0C7)
 
 val selectedBarColor = Color(0xFFB5A387)
 val textColor = Color(0xFF20262E)
+
+val blackColor = Color(0xFF20262E)
+
+val pinkColor = Color(0xFFE96479)

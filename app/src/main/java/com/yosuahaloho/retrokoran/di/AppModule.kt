@@ -1,6 +1,7 @@
 package com.yosuahaloho.retrokoran.di
 
 import com.yosuahaloho.retrokoran.BuildConfig
+import com.yosuahaloho.retrokoran.data.local.db.BookmarkNewsDatabase
 import com.yosuahaloho.retrokoran.data.remote.ApiService
 import com.yosuahaloho.retrokoran.data.repository.NewsRepositoryImpl
 import com.yosuahaloho.retrokoran.domain.repository.NewsRepository
@@ -9,8 +10,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -22,7 +25,15 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    fun provideOkHttpClient(): OkHttpClient =
+    @Singleton
+    fun provideLoggingInterceptor() = if (BuildConfig.DEBUG) {
+        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    } else {
+        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
+    }
+
+    @Provides
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor {
                 val ori = it.request()
@@ -37,22 +48,24 @@ object AppModule {
                     .build()
 
                 it.proceed(request)
-            }.build()
+            }
+            .addInterceptor(loggingInterceptor)
+            .build()
 
     @Provides
     @Singleton
-    fun provideApiAuthInstance(okHttpClient: OkHttpClient): ApiService =
+    fun provideApiAuthInstance(client: OkHttpClient): ApiService =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
+            .client(client)
             .build()
             .create(ApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideNewsRepository(api: ApiService) : NewsRepository {
-        return NewsRepositoryImpl(api)
+    fun provideNewsRepository(api: ApiService, db: BookmarkNewsDatabase): NewsRepository {
+        return NewsRepositoryImpl(api, db)
     }
 
 }

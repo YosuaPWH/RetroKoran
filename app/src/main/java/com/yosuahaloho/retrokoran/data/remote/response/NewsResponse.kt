@@ -5,7 +5,7 @@ import com.yosuahaloho.retrokoran.domain.model.Article
 /**
  * Created by Yosua on 13/05/2023
  */
-data class HeadlineNewsResponse(
+data class NewsResponse(
     val status: String,
     val totalResults: Int,
     val articles: List<Article>

@@ -1,8 +1,9 @@
 package com.yosuahaloho.retrokoran.data.remote
 
-import com.yosuahaloho.retrokoran.data.remote.response.HeadlineNewsResponse
+import com.yosuahaloho.retrokoran.data.remote.response.NewsResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -10,8 +11,16 @@ import retrofit2.http.Query
  */
 interface ApiService {
 
-    @GET("top-headlines")
+    @GET("everything")
     suspend fun getHeadlineNews(
-        @Query("country") country: String
-    ): Response<HeadlineNewsResponse>
+        @Query("sources") sources: String,
+        @Query("pageSize") pageSize: Int
+    ): Response<NewsResponse>
+
+    @GET("everything")
+    suspend fun searchNews(
+        @Query("sources") sources: String,
+        @Query("pageSize") pageSize: Int,
+        @Query("q") query: String
+    ): Response<NewsResponse>
 }
