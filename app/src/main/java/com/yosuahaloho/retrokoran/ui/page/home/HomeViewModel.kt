@@ -1,6 +1,5 @@
 package com.yosuahaloho.retrokoran.ui.page.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yosuahaloho.retrokoran.domain.model.Article

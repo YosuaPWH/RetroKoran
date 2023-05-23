@@ -1,6 +1,5 @@
 package com.yosuahaloho.retrokoran.ui.page.bookmark
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yosuahaloho.retrokoran.domain.model.Article
@@ -32,7 +31,6 @@ class BookmarkViewModel @Inject constructor(
 
     fun getBookmarkedNews() {
         viewModelScope.launch {
-            Log.d("NGAMBIL BOOKMARK", "DAWDAW")
             newsRepo.getBookmarkedNews().collect { result ->
                 when (result) {
                     is Result.Success -> {

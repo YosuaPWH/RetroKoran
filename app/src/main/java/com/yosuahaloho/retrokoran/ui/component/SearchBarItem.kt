@@ -47,6 +47,7 @@ import com.yosuahaloho.retrokoran.util.UiState
 fun SearchBarItem(
     searchFocus: FocusRequester,
     viewModel: HomeViewModel,
+    modifier: Modifier = Modifier,
     active: Boolean,
     navController: NavHostController,
     onClickSearch: (Boolean) -> Unit,
@@ -61,7 +62,7 @@ fun SearchBarItem(
     }
 
     SearchBar(
-        modifier = (if (active) Modifier.fillMaxSize() else Modifier.size(0.dp))
+        modifier = (if (active) modifier.fillMaxSize() else modifier.size(0.dp))
             .onKeyEvent { keyEvent ->
                 if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.Back) {
                     onClickSearch(false)
@@ -133,7 +134,7 @@ fun SearchBarItem(
                                         navController.navigate(route = Screen.Detail.route)
                                     }
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = modifier.height(8.dp))
                             }
                         }
                     }

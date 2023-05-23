@@ -1,7 +1,6 @@
 package com.yosuahaloho.retrokoran.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +29,11 @@ import com.yosuahaloho.retrokoran.util.effectShimmer
  * Created by Yosua on 12/05/2023
  */
 @Composable
-fun NewsItemShimmer() {
+fun NewsItemShimmer(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(123.dp)
     ) {
         Row(
@@ -41,11 +42,11 @@ fun NewsItemShimmer() {
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Column(modifier = Modifier.weight(2f)) {
+            Column(modifier = modifier.weight(2f)) {
                 Text(
                     text = "",
                     fontSize = 12.sp,
-                    modifier = Modifier
+                    modifier = modifier
                         .width(80.dp)
                         .effectShimmer()
                 )
@@ -54,7 +55,7 @@ fun NewsItemShimmer() {
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 18.sp,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .weight(1f)
                         .effectShimmer()
@@ -62,7 +63,7 @@ fun NewsItemShimmer() {
                 Text(
                     text = "",
                     fontSize = 12.sp,
-                    modifier = Modifier
+                    modifier = modifier
                         .width(150.dp)
                         .effectShimmer()
                 )
@@ -71,7 +72,7 @@ fun NewsItemShimmer() {
                 model = "",
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
-                modifier = Modifier
+                modifier = modifier
                     .weight(1f)
                     .width(100.dp)
                     .fillMaxSize()

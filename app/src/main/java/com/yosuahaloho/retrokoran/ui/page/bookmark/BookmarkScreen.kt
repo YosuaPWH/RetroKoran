@@ -18,8 +18,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.yosuahaloho.retrokoran.domain.model.Article
+import com.yosuahaloho.retrokoran.ui.component.LayoutItemShimmer
 import com.yosuahaloho.retrokoran.ui.component.NewsItem
-import com.yosuahaloho.retrokoran.ui.component.NewsItemShimmer
+import com.yosuahaloho.retrokoran.ui.component.ShowToast
 import com.yosuahaloho.retrokoran.ui.navigation.Screen
 import com.yosuahaloho.retrokoran.ui.theme.DMSerif
 import com.yosuahaloho.retrokoran.util.UiState
@@ -37,23 +38,18 @@ fun BookmarkScreen(
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
         when (it) {
             is UiState.Loading -> {
-                BookmarkContent(
-                    isLoading = true,
-                    bookmarkNews = emptyList(),
-                    navController = navController
-                )
+                LayoutItemShimmer()
             }
 
             is UiState.Success -> {
                 BookmarkContent(
-                    isLoading = false,
                     bookmarkNews = it.data,
                     navController = navController
                 )
             }
 
             is UiState.Error -> {
-
+                ShowToast(message = it.errorMessage)
             }
         }
     }
@@ -61,7 +57,6 @@ fun BookmarkScreen(
 
 @Composable
 fun BookmarkContent(
-    isLoading: Boolean,
     bookmarkNews: List<Article>,
     navController: NavHostController,
     modifier: Modifier = Modifier
@@ -85,27 +80,20 @@ fun BookmarkContent(
                 fontFamily = DMSerif
             )
             LazyColumn {
-                if (isLoading) {
-                    items(10) {
-                        NewsItemShimmer()
-                    }
-                } else {
-                    items(bookmarkNews, key = { it.title }) { article ->
-                        NewsItem(
-                            article = article,
-                            onClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    key = "article",
-                                    value = article
-                                )
-                                navController.navigate(route = Screen.Detail.route)
-                            }
-                        )
-                        Spacer(modifier = modifier.height(8.dp))
-                    }
+                items(bookmarkNews, key = { it.title }) { article ->
+                    NewsItem(
+                        article = article,
+                        onClick = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                key = "article",
+                                value = article
+                            )
+                            navController.navigate(route = Screen.Detail.route)
+                        }
+                    )
+                    Spacer(modifier = modifier.height(8.dp))
                 }
             }
         }
-
     }
 }

@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.yosuahaloho.retrokoran.domain.model.Article
-import com.yosuahaloho.retrokoran.domain.model.Source
 import com.yosuahaloho.retrokoran.ui.theme.RetroKoranTheme
 import com.yosuahaloho.retrokoran.ui.theme.backgroundNews
 import com.yosuahaloho.retrokoran.util.effectShimmer
@@ -34,17 +33,18 @@ import com.yosuahaloho.retrokoran.util.effectShimmer
 @Composable
 fun NewsItem(
     article: Article,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(123.dp)
             .clickable {
                 onClick()
             }
     ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .background(backgroundNews)
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -73,7 +73,7 @@ fun NewsItem(
                     painter = painter,
                     contentDescription = null,
                     contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
+                    modifier = modifier
                         .weight(1f)
                         .width(100.dp)
                         .fillMaxSize()
@@ -84,7 +84,7 @@ fun NewsItem(
                     painter = painter,
                     contentScale = ContentScale.FillHeight,
                     contentDescription = null,
-                    modifier = Modifier
+                    modifier = modifier
                         .weight(1f)
                         .width(100.dp)
                         .fillMaxSize()

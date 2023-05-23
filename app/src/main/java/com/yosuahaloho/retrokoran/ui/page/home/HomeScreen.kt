@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -69,8 +70,11 @@ fun HomeScreen(
 fun HomeContent(
     news: List<Article>,
     navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = modifier.testTag("NewsList")
+    ) {
         items(news, key = { data -> data.title }) { article ->
             NewsItem(
                 article = article,
@@ -82,7 +86,7 @@ fun HomeContent(
                     navController.navigate(route = Screen.Detail.route)
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = modifier.height(8.dp))
         }
     }
 }

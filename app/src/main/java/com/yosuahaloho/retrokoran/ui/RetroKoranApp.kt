@@ -1,7 +1,6 @@
 package com.yosuahaloho.retrokoran.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,9 +20,9 @@ import com.yosuahaloho.retrokoran.domain.model.Article
 import com.yosuahaloho.retrokoran.ui.component.BottomBar
 import com.yosuahaloho.retrokoran.ui.navigation.Screen
 import com.yosuahaloho.retrokoran.ui.page.about.AboutScreen
+import com.yosuahaloho.retrokoran.ui.page.bookmark.BookmarkScreen
 import com.yosuahaloho.retrokoran.ui.page.detail_news.DetailNewsScreen
 import com.yosuahaloho.retrokoran.ui.page.home.HomeScreen
-import com.yosuahaloho.retrokoran.ui.page.bookmark.BookmarkScreen
 import com.yosuahaloho.retrokoran.ui.theme.RetroKoranTheme
 
 /**
@@ -42,11 +41,11 @@ fun RetroKoranApp(
 
     Scaffold(
         bottomBar = {
-            Log.d("ISSEARCHING", displayBottomNavigation.toString())
-            if (!displayBottomNavigation) {
-                if (currentRoute != Screen.Detail.route) {
-                    BottomBar(navController = navController)
-                }
+            if (currentRoute == Screen.Home.route
+                || currentRoute == Screen.Saved.route
+                || currentRoute == Screen.About.route
+            ) {
+                BottomBar(navController = navController)
             }
         }
     ) { paddingValues ->
@@ -71,18 +70,12 @@ fun RetroKoranApp(
             }
             composable(
                 route = Screen.Detail.route
-//                arguments = listOf(navArgument("data") {
-//                    type = Article
-//                })
             ) {
-                val result = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
-//                Log.d("DETAIL", result.toString())
+                val result =
+                    navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
                 if (result != null) {
                     DetailNewsScreen(
                         article = result,
-                        displayBottomNavigation = {
-                            displayBottomNavigation = it
-                        }
                     )
                 }
             }

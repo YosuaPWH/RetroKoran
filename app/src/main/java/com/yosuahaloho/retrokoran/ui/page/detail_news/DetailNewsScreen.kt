@@ -20,14 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
@@ -52,14 +46,12 @@ import com.yosuahaloho.retrokoran.util.effectShimmer
 /**
  * Created by Yosua on 14/05/2023
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailNewsScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailNewsViewModel = hiltViewModel(),
     article: Article,
-    displayBottomNavigation: (Boolean) -> Unit
 ) {
     viewModel.getContent(article.url)
 
@@ -70,13 +62,6 @@ fun DetailNewsScreen(
     val isBookmark by viewModel.isBookmarkedNews.collectAsState()
 
     Scaffold(
-        modifier = modifier
-            .onKeyEvent { keyEvent ->
-                if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.Back) {
-                    displayBottomNavigation(false)
-                }
-                true
-            },
         floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
@@ -194,7 +179,6 @@ fun DetailNewsScreenPreview() {
                     author = "Meredith Deliso",
                     content = "A lawsuit alleges a homebuilding company created a hostile working environment and discriminated "
                 ),
-                displayBottomNavigation = {}
             )
         }
     }

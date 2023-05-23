@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.yosuahaloho.retrokoran.data.local.entity.BookmarkNews
 import com.yosuahaloho.retrokoran.domain.model.Article
 
 /**

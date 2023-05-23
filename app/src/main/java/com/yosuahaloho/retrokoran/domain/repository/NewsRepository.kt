@@ -1,6 +1,5 @@
 package com.yosuahaloho.retrokoran.domain.repository
 
-import com.yosuahaloho.retrokoran.data.local.entity.BookmarkNews
 import com.yosuahaloho.retrokoran.domain.model.Article
 import com.yosuahaloho.retrokoran.util.Result
 import kotlinx.coroutines.flow.Flow
