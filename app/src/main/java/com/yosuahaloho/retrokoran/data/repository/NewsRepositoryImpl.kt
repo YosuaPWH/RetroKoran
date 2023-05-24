@@ -23,7 +23,11 @@ class NewsRepositoryImpl constructor(
 
     override suspend fun getContent(link: String): String = withContext(Dispatchers.IO) {
         val doc = Jsoup.connect(link).get()
-        val detail = doc.getElementsByClass("article-body__content")
+
+        var detail = doc.getElementsByClass("showblog-body__content")
+        if (detail.isEmpty()) {
+            detail = doc.getElementsByClass("article-body__content")
+        }
         val paragraph = detail.select("p")
         val detailText = StringBuilder()
 
