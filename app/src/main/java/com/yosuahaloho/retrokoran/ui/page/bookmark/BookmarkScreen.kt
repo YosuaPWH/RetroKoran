@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.yosuahaloho.retrokoran.domain.model.Article
+import com.yosuahaloho.retrokoran.ui.component.EmptyAnimation
 import com.yosuahaloho.retrokoran.ui.component.LayoutItemShimmer
 import com.yosuahaloho.retrokoran.ui.component.NewsItem
 import com.yosuahaloho.retrokoran.ui.component.ShowToast
@@ -36,32 +37,6 @@ fun BookmarkScreen(
     viewModel: BookmarkViewModel = hiltViewModel()
 ) {
     viewModel.getBookmarkedNews()
-    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
-        when (it) {
-            is UiState.Loading -> {
-                LayoutItemShimmer()
-            }
-
-            is UiState.Success -> {
-                BookmarkContent(
-                    bookmarkNews = it.data,
-                    navController = navController
-                )
-            }
-
-            is UiState.Error -> {
-                ShowToast(message = it.errorMessage)
-            }
-        }
-    }
-}
-
-@Composable
-fun BookmarkContent(
-    bookmarkNews: List<Article>,
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
     Box(
         modifier = modifier
             .padding(10.dp)
@@ -81,21 +56,52 @@ fun BookmarkContent(
                 fontFamily = DMSerif,
                 modifier = modifier.testTag("bookmark")
             )
-            LazyColumn {
-                items(bookmarkNews, key = { it.title }) { article ->
-                    NewsItem(
-                        article = article,
-                        onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                key = "article",
-                                value = article
+            viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
+                when (it) {
+                    is UiState.Loading -> {
+                        LayoutItemShimmer()
+                    }
+
+                    is UiState.Success -> {
+                        if (it.data.isEmpty()) {
+                            EmptyAnimation()
+                        } else {
+                            BookmarkContent(
+                                bookmarkNews = it.data,
+                                navController = navController
                             )
-                            navController.navigate(route = Screen.Detail.route)
                         }
-                    )
-                    Spacer(modifier = modifier.height(8.dp))
+                    }
+
+                    is UiState.Error -> {
+                        ShowToast(message = it.errorMessage)
+                    }
                 }
             }
+        }
+    }
+
+}
+
+@Composable
+fun BookmarkContent(
+    bookmarkNews: List<Article>,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn {
+        items(bookmarkNews, key = { it.title }) { article ->
+            NewsItem(
+                article = article,
+                onClick = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = "article",
+                        value = article
+                    )
+                    navController.navigate(route = Screen.Detail.route)
+                }
+            )
+            Spacer(modifier = modifier.height(8.dp))
         }
     }
 }

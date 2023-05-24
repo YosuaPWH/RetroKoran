@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.yosuahaloho.retrokoran.domain.model.Article
+import com.yosuahaloho.retrokoran.ui.component.EmptyAnimation
 import com.yosuahaloho.retrokoran.ui.component.Header
 import com.yosuahaloho.retrokoran.ui.component.LayoutItemShimmer
 import com.yosuahaloho.retrokoran.ui.component.NewsItem
@@ -50,10 +51,14 @@ fun HomeScreen(
                 }
 
                 is UiState.Success -> {
-                    HomeContent(
-                        news = it.data,
-                        navController = navController,
-                    )
+                    if (it.data.isEmpty()) {
+                        EmptyAnimation()
+                    } else {
+                        HomeContent(
+                            news = it.data,
+                            navController = navController,
+                        )
+                    }
                 }
 
                 is UiState.Error -> {
