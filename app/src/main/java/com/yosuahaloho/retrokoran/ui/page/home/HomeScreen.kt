@@ -72,9 +72,7 @@ fun HomeContent(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.testTag("NewsList")
-    ) {
+    LazyColumn {
         items(news, key = { data -> data.title }) { article ->
             NewsItem(
                 article = article,

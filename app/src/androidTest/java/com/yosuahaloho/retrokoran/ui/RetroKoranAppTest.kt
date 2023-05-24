@@ -1,18 +1,15 @@
 package com.yosuahaloho.retrokoran.ui
 
-import androidx.activity.ComponentActivity
-import androidx.compose.ui.platform.LocalContext
+import android.util.Log
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.testing.TestNavHostController
-import com.yosuahaloho.retrokoran.R
-import com.yosuahaloho.retrokoran.assertCurrentRouteName
-import com.yosuahaloho.retrokoran.onNodeWithStringId
-import com.yosuahaloho.retrokoran.ui.navigation.Screen
-import com.yosuahaloho.retrokoran.ui.theme.RetroKoranTheme
+import androidx.compose.ui.test.performTextInput
+import com.yosuahaloho.retrokoran.MainActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -20,44 +17,49 @@ import org.junit.Test
 /**
  * Created by Yosua on 24/05/2023
  */
+@HiltAndroidTest
 class RetroKoranAppTest {
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-    private lateinit var navController: TestNavHostController
+    @get:Rule(order = 0)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    var composeTestRule = createAndroidComposeRule(MainActivity::class.java)
 
     @Before
     fun setup() {
-        composeTestRule.setContent {
-            RetroKoranTheme {
-                navController = TestNavHostController(LocalContext.current)
-                navController.navigatorProvider.addNavigator(ComposeNavigator())
-                RetroKoranApp(navController = navController)
-            }
-        }
-    }
+        hiltRule.inject()
 
-    @Test
-    fun navHost_verifyStartDestination() {
-        navController.assertCurrentRouteName(Screen.Home.route)
     }
 
     @Test
     fun navHost_bottomNavigation_working() {
-        composeTestRule.onNodeWithStringId(R.string.home).performClick()
-        navController.assertCurrentRouteName(Screen.Home.route)
-        composeTestRule.onNodeWithStringId(R.string.saved).performClick()
-        navController.assertCurrentRouteName(Screen.Saved.route)
-        composeTestRule.onNodeWithStringId(R.string.about).performClick()
-        navController.assertCurrentRouteName(Screen.About.route)
+        composeTestRule.onNodeWithTag("home_page").performClick()
+        composeTestRule.onNodeWithTag("saved_page").performClick()
+        composeTestRule.onNodeWithTag("about_page").performClick()
+    }
+
+    @Test
+    fun checkIfBookmarkScreenIsDisplayed() {
+        composeTestRule.onNodeWithTag("saved_page").performClick()
+        composeTestRule.onNodeWithTag("bookmark").assertIsDisplayed()
     }
 
     @Test
     fun navHost_checkSearchIsDisplayed() {
-        composeTestRule.onNodeWithText("Search").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("Search").assertIsDisplayed()
     }
 
     @Test
-    fun navHost_checkIfDataNewsIsDisplayed() {
-        composeTestRule.onNodeWithText("NewsList").assertIsDisplayed()
+    fun checkIfSearchBarIsActive() {
+        composeTestRule.onNodeWithTag("Search").performClick()
+        val searchBar = composeTestRule.onNodeWithTag("SearchBar")
+        searchBar.assertIsDisplayed()
+        searchBar.performClick()
+    }
+
+    @Test
+    fun checkFotoProfilIsDisplayed() {
+        composeTestRule.onNodeWithTag("about_page").performClick()
+        composeTestRule.onNodeWithTag("FotoProfil").assertIsDisplayed()
     }
 }

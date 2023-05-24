@@ -1,7 +1,7 @@
 package com.yosuahaloho.retrokoran.di
 
 import com.yosuahaloho.retrokoran.BuildConfig
-import com.yosuahaloho.retrokoran.data.local.db.BookmarkNewsDatabase
+import com.yosuahaloho.retrokoran.data.local.dao.BookmarkNewsDao
 import com.yosuahaloho.retrokoran.data.remote.ApiService
 import com.yosuahaloho.retrokoran.data.repository.NewsRepositoryImpl
 import com.yosuahaloho.retrokoran.domain.repository.NewsRepository
@@ -62,8 +62,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNewsRepository(api: ApiService, db: BookmarkNewsDatabase): NewsRepository {
-        return NewsRepositoryImpl(api, db)
+    fun provideNewsRepository(api: ApiService, dao: BookmarkNewsDao): NewsRepository {
+        return NewsRepositoryImpl(api, dao)
     }
 
 }

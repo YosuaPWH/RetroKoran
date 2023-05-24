@@ -2,13 +2,13 @@ package com.yosuahaloho.retrokoran.di
 
 import android.content.Context
 import androidx.room.Room
+import com.yosuahaloho.retrokoran.data.local.dao.BookmarkNewsDao
 import com.yosuahaloho.retrokoran.data.local.db.BookmarkNewsDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 /**
  * Created by Yosua on 22/05/2023
@@ -17,9 +17,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    @Provides
+    fun provideDao(database: BookmarkNewsDatabase): BookmarkNewsDao {
+        return database.bookmarkNewsDao()
+    }
 
     @Provides
-    @Singleton
     fun provideDatabaseBookmark(
         @ApplicationContext context: Context
     ): BookmarkNewsDatabase {
@@ -27,6 +30,6 @@ object DatabaseModule {
             context,
             BookmarkNewsDatabase::class.java,
             "bookmark_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 }

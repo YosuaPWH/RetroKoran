@@ -9,5 +9,6 @@ data class BottomBarItem(
     val label: String,
     @DrawableRes
     val icon: Int,
-    val screen: Screen
+    val screen: Screen,
+    val contentDescription: String
 )

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,13 +34,13 @@ fun AboutScreen(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(top = 50.dp).fillMaxSize()
+        modifier = modifier.padding(top = 10.dp).fillMaxSize()
     ) {
         Text(
             text = "The Creator",
             fontFamily = DMSerif,
             fontSize = 32.sp,
-            modifier = modifier.padding(bottom = 5.dp)
+            modifier = modifier.padding(bottom = 50.dp)
         )
         Image(
             painter = painterResource(id = R.drawable.yosuahaloho),
@@ -48,7 +49,8 @@ fun AboutScreen(
             modifier = modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .border(2.dp, selectedBarColor, CircleShape),
+                .border(2.dp, selectedBarColor, CircleShape)
+                .testTag("FotoProfil"),
         )
         Spacer(modifier = modifier.padding(top = 15.dp))
         Text(

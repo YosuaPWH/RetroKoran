@@ -1,4 +1,4 @@
-package com.yosuahaloho.retrokoran.util
+package com.yosuahaloho.retrokoran
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

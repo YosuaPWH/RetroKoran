@@ -1,7 +1,7 @@
 package com.yosuahaloho.retrokoran.data.repository
 
 import android.util.Log
-import com.yosuahaloho.retrokoran.data.local.db.BookmarkNewsDatabase
+import com.yosuahaloho.retrokoran.data.local.dao.BookmarkNewsDao
 import com.yosuahaloho.retrokoran.data.remote.ApiService
 import com.yosuahaloho.retrokoran.domain.model.Article
 import com.yosuahaloho.retrokoran.domain.repository.NewsRepository
@@ -16,8 +16,10 @@ import org.jsoup.Jsoup
 /**
  * Created by Yosua on 13/05/2023
  */
-class NewsRepositoryImpl(private val apiService: ApiService, private val db: BookmarkNewsDatabase) :
-    NewsRepository {
+class NewsRepositoryImpl constructor(
+    private val apiService: ApiService,
+    private val dao: BookmarkNewsDao
+) : NewsRepository {
 
     override suspend fun getContent(link: String): String = withContext(Dispatchers.IO) {
         val doc = Jsoup.connect(link).get()
@@ -66,7 +68,7 @@ class NewsRepositoryImpl(private val apiService: ApiService, private val db: Boo
 
     override suspend fun addToBookmarkedNews(news: Article) {
         try {
-            db.bookmarkNewsDao().insert(news)
+            dao.insert(news)
         } catch (e: Exception) {
             Log.e("Repo-AddToBookmarkedNews", e.message.toString())
         }
@@ -74,7 +76,7 @@ class NewsRepositoryImpl(private val apiService: ApiService, private val db: Boo
 
     override suspend fun removeFromBookmarkedNews(news: Article) {
         try {
-            db.bookmarkNewsDao().delete(news)
+            dao.delete(news)
         } catch (e: Exception) {
             Log.e("Repo-RemoveFromBookmarkedNews", e.message.toString())
         }
@@ -82,7 +84,7 @@ class NewsRepositoryImpl(private val apiService: ApiService, private val db: Boo
 
     override suspend fun isBookmarkedNews(title: String): Boolean {
         return try {
-            db.bookmarkNewsDao().isBookmarked(title)
+            dao.isBookmarked(title)
         } catch (e: Exception) {
             false
         }
@@ -90,7 +92,7 @@ class NewsRepositoryImpl(private val apiService: ApiService, private val db: Boo
 
     override suspend fun getBookmarkedNews(): Flow<Result<List<Article>>> = flow {
         try {
-            val data = db.bookmarkNewsDao().getAllBookmarkedNews()
+            val data = dao.getAllBookmarkedNews()
             emit(Result.Success(data))
         } catch (e: Exception) {
             emit(Result.Failure("GetBookmarkedNews ${e.message}"))
@@ -129,4 +131,5 @@ class NewsRepositoryImpl(private val apiService: ApiService, private val db: Boo
             emit(Result.Failure("NewsRepo-searchNews-Excep: ${e.message}"))
         }
     }
+
 }

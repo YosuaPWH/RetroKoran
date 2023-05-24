@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -41,17 +42,20 @@ fun BottomBar(
             BottomBarItem(
                 label = stringResource(R.string.home),
                 icon = R.drawable.ic_bottom_home,
-                screen = Screen.Home
+                screen = Screen.Home,
+                contentDescription = "home_page"
             ),
             BottomBarItem(
                 label = stringResource(R.string.saved),
                 icon = R.drawable.ic_bottom_saved,
-                screen = Screen.Saved
+                screen = Screen.Saved,
+                contentDescription = "saved_page"
             ),
             BottomBarItem(
                 label = stringResource(R.string.about),
                 icon = R.drawable.ic_bottom_about,
-                screen = Screen.About
+                screen = Screen.About,
+                contentDescription = "about_page"
             )
         )
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -59,6 +63,7 @@ fun BottomBar(
 
         bottomBarItems.map { itemBottomBar ->
             NavigationBarItem(
+                modifier = modifier.testTag(itemBottomBar.contentDescription),
                 icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = itemBottomBar.icon),
