@@ -1,5 +1,5 @@
 **Preview**
 
-(images/images1.png)
+![Gambar1](images/images1.png)
 
-(images/images2.png)
+![Gambar2](images/images2.png)
