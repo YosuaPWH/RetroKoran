@@ -67,7 +67,7 @@ fun BottomBar(
                 icon = {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = itemBottomBar.icon),
-                        contentDescription = itemBottomBar.label
+                        contentDescription = itemBottomBar.contentDescription
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
